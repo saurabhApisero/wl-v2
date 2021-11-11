@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd">
+	<flow name="product-getDetails" doc:id="68472197-2607-416b-a073-8766d9624ee8" >
+		<set-variable value="#[attributes.queryParams.usItemId]" doc:name="Set usItemId" doc:id="51c89339-6b90-4edf-a93a-b93659e926eb" variableName="usItemId"/>
+		<http:request method="GET" doc:name="get product details" doc:id="16938854-cb7d-4db3-b356-a38360528c5d" config-ref="HTTP_Request_configuration" path="/products/v3/get-details">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	usItemId : vars.usItemId
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform prdtbyProductId" doc:id="d68d34a6-924f-4859-aec8-12daf0ff855d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	productByProductId: {
+		productTypeId: payload.data.product.productTypeId,
+		departmentName: payload.data.product.segment,
+		brand: payload.data.product.brand,
+		itemId: payload.data.product.usItemId
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="213211c7-edf5-40dc-8f7c-11ccfd5e8967" type="ANY">
+				<ee:transform doc:name="Transform error Message" doc:id="77eb5d79-a05c-41c1-8661-e534fb9f9ae1" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="getStoreDetails" doc:id="45aabc57-47b3-4fb5-a429-194edc8a81a1" >
+		<set-variable value="#[attributes.queryParams.postalCode]" doc:name="Set postalCode" doc:id="c8625070-6907-4a02-b2da-ccf95d4b56c4" variableName="postalCode"/>
+		<http:request method="GET" doc:name="get store address" doc:id="fb102d02-efc2-4be1-9a34-229377a6f522" config-ref="HTTP_Request_configuration" path="/stores/list">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"postalCode" : vars.postalCode
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Transform open24Hrs" doc:id="3357b44e-b93f-4c6d-b3f2-a9caec99a4f5" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	data:{
+		storesBySearchTerm:{
+			stores: payload.data.storesBySearchTerm.stores map ((item, index) -> 
+item  update {
+        case .operationalHours.open24Hours ->  'yes'
+}
+
+)
+			
+			
+			
+		}
+		
+	}
+	
+}
+
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform stores" doc:id="13aa56df-e05b-48e7-ac76-e20275b94025" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.data.storesBySearchTerm.stores filter ($.distance == min(payload.data.storesBySearchTerm.stores.distance) and $.operationalHours.open24Hours == "yes") map ((item, index) -> {
+	"store_id": item.id,
+	"store_name": item.displayName,
+	"store_address": item.address.address ++ "," ++ item.address.city ++ "," ++ item.address.state ++ "," ++ item.address.country ++ "," ++ "(" ++ item.address.postalCode ++ ")",
+	"store_contact_number": 9827324121,
+	"store_distance": item.distance
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fc0a0e57-2354-478d-be6c-8832a198089b" type="ANY">
+				<ee:transform doc:name="Transform error Message" doc:id="be7bacf6-b86e-4b52-84b7-14f30505f5be" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+	<flow name="insert-PrdInfo" doc:id="2b5a6fcf-be30-486b-a969-59b58979b8b1" >
+		<http:listener doc:name="Listener" doc:id="ab7cb7d8-a332-4142-8da9-1935a1adabc6" config-ref="HTTP_Listener_config" path="/product-info"/>
+		<db:insert doc:name="Insert prd info" doc:id="9e6c3f52-e37c-4780-8e88-c4bf55bcb39c" config-ref="DB_Config">
+			<db:sql><![CDATA[INSERT INTO order_details (order_id,store_id,store_name,store_address,store_distance,store_contact_number,product_type_id,quantity)
+VALUES (:order_id,:store_id,:store_name,:store_address,:store_distance,:store_contact_number,:product_type_id,:quantity)]]></db:sql>
+			<db:input-parameters><![CDATA[#[{
+	"order_id": payload.order_id,
+    "store_id": payload.store_id,
+    "store_name": payload.store_name,
+	"store_address": payload.store_address,
+	"store_distance": payload.store_distance,
+	"store_contact_number": payload.store_contact_number,
+	"product_type_id": payload.product_type_id,
+	"quantity": payload.quantity
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform prd inserted" doc:id="fcc7e0e2-35af-4b08-bb06-e0ab33b584fb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: "Product information inserted successfully."
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b2602a75-f7aa-4ced-a683-735cb070cc95" type="ANY">
+				<ee:transform doc:name="Transform error Message" doc:id="ad53f96c-8b4e-4a6e-b15e-d28319a1a01c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.description
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

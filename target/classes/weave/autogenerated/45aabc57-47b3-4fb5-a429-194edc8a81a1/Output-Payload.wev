@@ -1,0 +1,14 @@
+%dw 2.0
+
+type auto_45aabc57_47b3_4fb5_a429_194edc8a81a1_Output_Payload = {
+  neareststore: {
+    store_id: Number, 
+    store_name: String, 
+    store_address: String, 
+    store_contact_number: Number, 
+    store_distance: String, 
+    _?: Any
+  }, 
+  _?: Any
+}
+

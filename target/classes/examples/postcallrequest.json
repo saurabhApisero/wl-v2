@@ -1,0 +1,10 @@
+{
+	"order_id":123,
+    "store_id": 12456,
+    "store_name": "XYZ",
+	"store_address": "45-A, Golden Plaza, Jersey",
+	"store_distance": "10.5",
+	"store_contact_number": 1234567890,
+	"product_type_id": "12353",
+	"quantity": 25
+}

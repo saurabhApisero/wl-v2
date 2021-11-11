@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-suite.xml" />
+	<munit:test name="product-getDetails-test" doc:id="8607bf97-5159-4a67-afdc-e6dae9717ba3" >
+		<munit:behavior >
+			<munit-tools:spy doc:name="Spy Set usItemId" doc:id="7b0b2789-ffdf-4cc9-b96d-6dddc6a7f28d" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="51c89339-6b90-4edf-a93a-b93659e926eb" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert variables" doc:id="57fffbf6-ebf6-4820-9aa1-ac21d481147e" message="The variables do not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import productgetDetailstest::spy_assert_variables
+---
+spy_assert_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit-tools:spy doc:name="Spy Transform prdtbyProductId" doc:id="f5ec26f6-5289-4cb8-83b4-502a63442891" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d68d34a6-924f-4859-aec8-12daf0ff855d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="2db86c1a-2c64-4560-aa3f-b0e2edca9bcd" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import productgetDetailstest::spy_assert_payload2
+---
+spy_assert_payload2::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="6de0ddd7-bf43-42f9-9f35-52f956cec848" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import productgetDetailstest::spy_assert_payload3
+---
+spy_assert_payload3::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="0567eddb-fef2-42ca-9003-9a1ada4aa591" >
+				<munit:payload value="#[readUrl('classpath://productgetDetailstest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://productgetDetailstest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to product-getDetails" doc:id="e907451e-1585-4ddc-9e12-884611c0dea5" name="product-getDetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Set usItemId" doc:id="42eb16da-e892-44d7-8e70-10cac927d43b" processor="set-variable" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="51c89339-6b90-4edf-a93a-b93659e926eb" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify get product details" doc:id="a5cb029e-7731-46bb-8c5a-4a91205f214f" processor="http:request" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="16938854-cb7d-4db3-b356-a38360528c5d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform prdtbyProductId" doc:id="ab9fecbd-f8b1-4368-b972-4914c32502e7" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="d68d34a6-924f-4859-aec8-12daf0ff855d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getStoreDetails-test" doc:id="3bf7b330-8295-4c77-860f-aa8b97b89aad" >
+		<munit:behavior >
+			<munit-tools:spy doc:name="Spy Transform stores" doc:id="863d9661-ceff-48a9-aa67-ebf76d637e5f" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="13aa56df-e05b-48e7-ac76-e20275b94025" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="dbde77f0-4f65-42b3-a338-10edb5b13ad7" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getStoreDetailstest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="287edd5f-dbf4-4ad5-be47-1d7156aff9e7" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getStoreDetailstest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit-tools:spy doc:name="Spy Set postalCode" doc:id="cc0d9210-db09-4207-9a05-14f1bf027241" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="c8625070-6907-4a02-b2da-ccf95d4b56c4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert variables" doc:id="ea2987b8-a7f0-4f73-bd53-3271818355d3" message="The variables do not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getStoreDetailstest::spy_assert_variables
+---
+spy_assert_variables::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="3c8e8c61-02fa-44ee-a9ea-789ac940304a" >
+				<munit:payload value="#[readUrl('classpath://getStoreDetailstest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getStoreDetailstest\set-event_attributes.dwl')]" />
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getStoreDetails" doc:id="3ab9543a-563d-45a9-8c3e-9c3700b6674f" name="getStoreDetails"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify Set postalCode" doc:id="ee366b53-b6b7-42b9-b2c4-08f897190abd" processor="set-variable" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="c8625070-6907-4a02-b2da-ccf95d4b56c4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify get store address" doc:id="6142d525-a0a0-4678-9a50-c659b89e2737" processor="http:request" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="fb102d02-efc2-4be1-9a34-229377a6f522" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform open24Hrs" doc:id="3562b61d-b057-4b2f-b732-623b2842e869" processor="ee:transform" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="3357b44e-b93f-4c6d-b3f2-a9caec99a4f5" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform stores" doc:id="89f3deea-39bd-4c31-9881-cfb54202f11a" processor="ee:transform" times="1">
+				<munit-tools:with-attributes>
+					<munit-tools:with-attribute whereValue="13aa56df-e05b-48e7-ac76-e20275b94025" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:assert doc:name="Assert payload" doc:id="824ac880-b395-46d5-ab15-439bd5ff7974" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getStoreDetailstest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="insert-PrdInfoTest" doc:id="1d9e427c-4181-4b2e-a5df-d79035809a78" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7fc147dc-cb5e-436b-9aa1-4d8f8b0ecf5a" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert prd info" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[MunitTools::getResourceAsString('InsertPrdinDB/Insertpayload.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="cba4f517-fbaa-4693-a3d1-1ac3a6b6f490" >
+				<munit:payload value='{&#10;	"order_id": "25",&#10;    "store_id": "12456",&#10;    "store_name": "XYZ",&#10;	"store_address": "45-A, Golden Plaza, Jersey",&#10;	"store_distance": "10.5",&#10;	"store_contact_number": 1234567890,&#10;	"product_type_id": "12353",&#10;	"quantity": 25&#10;}' mediaType="application/json" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to insert-PrdInfo" doc:id="5c341f60-2769-4129-9d20-01bc41cdf932" name="insert-PrdInfo"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call Transform success message" doc:id="19ed8239-ff30-4be4-a484-563431645f5e" processor="ee:transform" atLeast="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Transform prd inserted" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	
+</munit:test>
+
+
+</mule>

@@ -1,0 +1,15 @@
+http:
+  port: "8081"
+  
+https:
+  host: "walmart.p.rapidapi.com"
+  Key: "3023a67861msh0eb707c9fd31682p12e9c9jsn4bd95787f3d4"
+
+db:
+  host: "db4free.net"
+  port: "3306"
+  user: "c4ebatch5"
+  pwd: "c4ebatch@5"
+  dbname: "testdbc45"
+  
+  

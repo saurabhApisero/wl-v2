@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="775fb26b-7eaf-414c-8bb5-1bc10eab09a3" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="a02beb8e-a460-45db-886c-eeb4027c0d2c" file="config.yaml" />
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="ecc18fc4-3fe2-4cc9-bbf0-b6d97a15785c" >
+		<http:request-connection host="${https.host}" protocol="HTTPS" connectionIdleTimeout="300000"/>
+		<http:default-headers >
+			<http:default-header key="X-Rapidapi-Key" value="${https.Key}" />
+			<http:default-header key="X-Rapidapi-Host" value="${https.host}" />
+		</http:default-headers>
+	</http:request-config>
+	<db:config name="DB_Config" doc:name="Database Config" doc:id="d7168b2a-1ed5-4d5c-af7e-b2660ab5c00e" >
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.pwd}" database="${db.dbname}"/>
+	</db:config>
+	<configuration doc:name="Configuration" doc:id="1af48873-0b23-4c0d-b044-3286387efa46" defaultErrorHandler-ref="globalError_Handler" />
+	<error-handler name="globalError_Handler" doc:id="2737e690-bbcf-47a2-af8f-a3c0cc82223c" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bb07ef0b-d2ff-4d9e-a942-f8864c1b13d9" type="ANY">
+			<ee:transform doc:name="Transform error Message" doc:id="536af910-4756-49b3-ab0b-6891a06a8714" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	message: error.description
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>
